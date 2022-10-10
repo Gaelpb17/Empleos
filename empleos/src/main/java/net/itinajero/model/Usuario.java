@@ -113,5 +113,4 @@ public class Usuario {
 		return "Usuario [id=" + id + ", username=" + username + ", nombre=" + nombre + ", email=" + email
 				+ ", password=" + password + ", estatus=" + estatus + ", fechaRegistro=" + fechaRegistro + "]";
 	}
-	
 }
