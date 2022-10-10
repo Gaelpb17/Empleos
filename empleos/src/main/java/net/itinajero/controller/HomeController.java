@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import net.itinajero.model.Vacante;
 import net.itinajero.service.IVacantesService;
@@ -57,5 +58,11 @@ public class HomeController {
 		
 		return "home";
 	}
+	@ModelAttribute // se esta agregando a nivel del metodo, aqui podemos agregar todos los atributos que queramos y estaran disponible para cualquier metodo
+	private void setGenericos(Model model) {
+		model.addAttribute("vacantes", serviceVacantes.buscarDestacadas());
+	}
+	
+	
 	 
 }
