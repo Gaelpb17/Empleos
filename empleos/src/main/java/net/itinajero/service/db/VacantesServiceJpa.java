@@ -42,4 +42,11 @@ public class VacantesServiceJpa implements IVacantesService {
 		// TODO Auto-generated method stub
 		return vacantesRepo.findByDestacadoAndEstatusOrderByIdDesc(1, "Aprobada");
 	}
+
+	@Override
+	public void eliminar(Integer idvacante) {
+		// TODO Auto-generated method stub
+		vacantesRepo.deleteById(idvacante);
+		
+	}
 }

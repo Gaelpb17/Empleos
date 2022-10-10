@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -15,6 +14,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,7 +50,7 @@ public class VacantesController {
 	
 	@GetMapping("/create")
 	public String crear(Vacante vacante, Model model) {
-		model.addAttribute("categorias", serviceCategorias.buscarTodas() );
+
 		return "vacantes/formVacante";
 	}
 	
@@ -93,12 +93,20 @@ public class VacantesController {
 		return "vacantes/listVacantes";
 	}
 	*/
+	@GetMapping("/delete/{id}")
+	public String eliminar(@PathVariable("id") int idVacante, RedirectAttributes attributes) {
+		System.out.println("Borrando vacante con id: " + idVacante); 
+		serviceVacantes.eliminar(idVacante); // con esta linea se estaria eliminando una vacante
+		//model.addAttribute("id", idVacante);
+		attributes.addFlashAttribute("msg", "La vacante fue eliminada!");
+		return "redirect:/vacantes/index"; // cuando se elimine, va regresar a la pagina de inicio de la lista 
+	}
+	@GetMapping("/edit/{id}")
+	private String editar(@PathVariable("id") int idVacante, Model model) {
+		Vacante vacante = serviceVacantes.buscarPorId(idVacante);
+		model.addAttribute("vacante", vacante);
 	
-	@GetMapping("/delete")
-	public String eliminar(@RequestParam("id") int idVacante, Model model) {
-		System.out.println("Borrando vacante con id: " + idVacante);
-		model.addAttribute("id", idVacante);
-		return "mensaje";		
+		return "vacantes/formVacante"; 
 	}
 	
 	@GetMapping("/view/{id}")
@@ -112,6 +120,11 @@ public class VacantesController {
 		//Buscar los detalles de la vacante en id BD...
 		return "detalle";
 	}
+	@ModelAttribute // para que lo pudamos usar en cualquier metodo
+	public void setGenericos(Model model) {
+		model.addAttribute("categorias", serviceCategorias.buscarTodas());
+	}
+	
 	
 	@InitBinder
 	public void initBinder(WebDataBinder webDataBinder) {
