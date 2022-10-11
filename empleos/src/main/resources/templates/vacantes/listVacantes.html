@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="utf-8">
@@ -44,7 +44,6 @@
               </thead>
               <tbody>
                 <tr th:each="vacante : ${vacantes}">
-                  <td></td>
                   <td th:text="${vacante.categoria.nombre}"></td>
                   <td th:text="${vacante.nombre}"></td>                  
                   <td th:text="${vacante.fecha}"></td>
@@ -57,7 +56,14 @@
                 </tr>                                              
               </tbody>
             </table>
-            
+          <!-- 
+            <nav th:if="${vacantes.totalPages > 0}" aria-label="Page navigation example" >
+				<ul class="pagination">
+					<li class="page-item"><a th:href="@{/vacantes/indexPaginate(page=${vacantes.number -1})}" class="page-link">Anterior</a></li>
+					<li class="page-item"><a th:href="@{/vacantes/indexPaginate(page=${vacantes.number + 1})}" class="page-link">Siguiente</a></li>
+				</ul>
+			</nav>
+            -->
           </div>
         </div>
       </div> <!-- /container -->
