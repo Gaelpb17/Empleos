@@ -2,8 +2,12 @@ package net.itinajero.service;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import net.itinajero.model.Categoria;
+import net.itinajero.model.Vacante;
 
 @Service
 public class CategoriasServiceImpl implements ICategoriasService{
@@ -79,6 +83,12 @@ public class CategoriasServiceImpl implements ICategoriasService{
 			}
 		}		
 		return null;	
+	}
+
+	@Override
+	public Page<Vacante> buscarTodas(Pageable page) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

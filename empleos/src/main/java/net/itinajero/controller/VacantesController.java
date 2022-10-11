@@ -31,78 +31,88 @@ import net.itinajero.util.Utileria;
 
 @Controller
 @RequestMapping("/vacantes")
-public class VacantesController {
+public class VacantesController { 
 	
 	@Value("${empleosapp.ruta.imagenes}")
 	private String ruta;
 	
-	@Autowired
+	@Autowired //se inyecta la instancia de nuestra clase de servicios
 	private IVacantesService serviceVacantes;
-	
-	@Autowired
 
-	private ICategoriasService serviceCategorias;
+	@Autowired 
+	//@Qualifier("categoriasServiceJpa")
+	private ICategoriasService serviceCategorias; // de esta forma se declara una variable al nivel de la clase y la podemos usar en cualquier metodo
 	
+	// Ejercicios
 	@GetMapping("/index")
 	public String mostrarIndex(Model model) {
+		// 1.Obtener todas las vacantes (recuperarlas con la clase de servicio)
+
 		List<Vacante> lista = serviceVacantes.buscarTodas();
-    	model.addAttribute("vacantes", lista);
+
+		// 2.Agregar al modelo el listado de vacantes
+		model.addAttribute("vacantes", lista);
+		// 3.Rederizar las vacantes en la vista (integrar el archivo
+		// template-empleos/listVacantes.html)
+
+		// 4.Agregar al menu una opcion llamada Vacantes configurando la URL
+		// "vacantes/index"
 		return "vacantes/listVacantes";
 	}
-	// este metodo recibe como parametro un tipo pageable, aquí vamos a dividir la lista en paginas
-		@GetMapping(value = "/indexPaginate")
-		public String mostrarIndexPaginado(Model model, Pageable page) {
-		   Page<Vacante>lista = serviceVacantes.buscarTodas(page);
-		   model.addAttribute("vacantes", lista);
-		
-		   return "vacantes/listVacantes";
-		}
-	
-	@GetMapping("/create")
-	public String crear(Vacante vacante, Model model) {
 
+	// Para que agreguemos paginacion a las vacantes
+	@GetMapping(value = "/indexPaginate")
+	public String mostrarIndexPaginado(Model model, Pageable page) {
+	Page<Vacante> lista = serviceVacantes.buscarTodas(page); // en lugar de que lo guarde en una lista lo guarda en una variable que implementa la interfaz pages 
+	model.addAttribute("vacantes", lista);
+	return "vacantes/listVacantes";
+	}
+
+	
+	// Este metodo es para que se puedan mostrar todas las categorias como opciones en el formulario de vacantes
+	@GetMapping("/create")
+	public String crear(Vacante vacante, Model model) { // se pasa como parametro un objeto de tipo vacante, asi se vincula la clase
+											// modelo, con el formulario que se esta renderizando
+		//model.addAttribute("categorias", serviceCategorias.buscarTodas());
 		return "vacantes/formVacante";
 	}
-	
-	@PostMapping("/save")
-	public String guardar(Vacante vacante, BindingResult result, RedirectAttributes attributes,
-			@RequestParam("archivoImagen") MultipartFile multiPart) {
+
+	// Carpeta 6 video 1
+	@PostMapping("/save") // Es el mismo metodo pero mas corto, esta relacionado con el modelo VACANTE
+	public String guardar(Vacante vacante, BindingResult result, RedirectAttributes attributes, @RequestParam("archivoImagen") MultipartFile multiPart, Model model) {
 		if (result.hasErrors()) {
-			for (ObjectError error: result.getAllErrors()){
-				System.out.println("Ocurrio un error: "+ error.getDefaultMessage());
-				}
-			
-			return "vacantes/formVacante";
+			for (ObjectError error : result.getAllErrors()) {
+				System.out.println("Ocurrio un error: " + error.getDefaultMessage()); // Es para que desplegue en la
+																						// consola los errores que pasa
+																						// en el formulario
+			}
+			model.addAttribute("categorias", serviceCategorias.buscarTodas()); // esto hace que al momento de que haya un error de escritura pues conserve la categoria
+			return "vacantes/formVacante"; 
 		}
-		
+		 
+		// Codigo para poder hacer que el formulario guarde las imagenes
 		if (!multiPart.isEmpty()) {
-			// String ruta = "c:/empleos/img-vacantes/"; //windows
+			//String ruta = "c:/empleos/img-vacantes/"; 
 			String nombreImagen = Utileria.guardarArchivo(multiPart, ruta);
-			if (nombreImagen !=null) {
+			if (nombreImagen != null){ // La imagen si se subio
+				// Procesamos la variable nombreImagen
 				vacante.setImagen(nombreImagen);
 			}
 		}
-		
 		serviceVacantes.guardar(vacante);
-		attributes.addFlashAttribute("msg", "Registro Guardado");
+		// Procesar objeto de modelo
+		attributes.addFlashAttribute("msg", "Registro Guardado"); // Son una forma para almacenar atributos y ser usados
+																	// en diferente peticion, SON TEMPORALES, son
+																	// eliminados despues del redirect
 		System.out.println("Vacante: " + vacante);
-		return "redirect:/vacantes/index";
+		// Peticion tipo GET
+		return "redirect:/vacantes/index"; // Cuando aplastemos GUARDAR nos mandara a la vista donde esta la lista de
+											// los vacantes
 	}
-	/*
-	@PostMapping("/save")
-	public String guardar(@RequestParam("nombre") String nombre, @RequestParam("descripcion") String descripcion,
-			@RequestParam("estatus") String estatus, @RequestParam("fecha") String fecha, @RequestParam("destacado") int destacado, 
-			@RequestParam("salario") double salario, @RequestParam("detalles") String detalles) {
-		System.out.println("Nombre Vacante: " + nombre);
-		System.out.println("Descripcion: " + descripcion);
-		System.out.println("Estatus: " + estatus);
-		System.out.println("Fecha Publicacion: " + fecha);
-		System.out.println("Destacado: " + destacado);
-		System.out.println("Salario Ofrecido: " + salario);
-		System.out.println("Detalles: " + detalles);
-		return "vacantes/listVacantes";
-	}
-	*/
+
+	
+	/* OPERACIONES CRUD*/
+	// METODO PARA ELIMINAR UNA VACANTE 
 	@GetMapping("/delete/{id}")
 	public String eliminar(@PathVariable("id") int idVacante, RedirectAttributes attributes) {
 		System.out.println("Borrando vacante con id: " + idVacante); 
@@ -111,35 +121,37 @@ public class VacantesController {
 		attributes.addFlashAttribute("msg", "La vacante fue eliminada!");
 		return "redirect:/vacantes/index"; // cuando se elimine, va regresar a la pagina de inicio de la lista 
 	}
+
+	// METODO PARA EDITAR UNA VACANTE 
 	@GetMapping("/edit/{id}")
 	private String editar(@PathVariable("id") int idVacante, Model model) {
 		Vacante vacante = serviceVacantes.buscarPorId(idVacante);
 		model.addAttribute("vacante", vacante);
-	
 		return "vacantes/formVacante"; 
 	}
 	
-	@GetMapping("/view/{id}")
-	public String verDetalle(@PathVariable("id") int idVacante, Model model) {
-		
-		Vacante vacante = serviceVacantes.buscarPorId(idVacante);
-		
-		System.out.println("Vacante: " + vacante);
-		model.addAttribute("vacante", vacante);
-		
-		//Buscar los detalles de la vacante en id BD...
-		return "detalle";
-	}
 	@ModelAttribute // para que lo pudamos usar en cualquier metodo
 	public void setGenericos(Model model) {
 		model.addAttribute("categorias", serviceCategorias.buscarTodas());
 	}
 	
-	
-	@InitBinder
+	// el "verDetalle" es el que recibe el ID que es pasado desde la tabla HTMl
+	@GetMapping("/view/{id}")
+	public String verDetalle(@PathVariable("id") int idVacante, Model model) {
+		Vacante vacante = serviceVacantes.buscarPorId(idVacante);
+		System.out.println("Vacante: " + "vacante");
+		model.addAttribute("vacante", vacante);
+
+		// Buscar los detalles de las vacantes en ID BD
+
+		return "detalle"; // antes se tenia que ingresar a la carpeta de vacantes, pero se elimino su
+							// archivo
+	}
+
+	@InitBinder // Sirve que se puedan convertir fechas, siempre debe de estar este metodo
+				// cuando usemos fechas en el formulario
 	public void initBinder(WebDataBinder webDataBinder) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 		webDataBinder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
 	}
-	
 }
