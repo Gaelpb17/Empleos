@@ -1,25 +1,32 @@
-<nav th:fragment="menu-principal" class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-  <a class="navbar-brand" th:href="@{/}">EmpleosApp</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+ <nav th:fragment="menu-principal" class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="/">EmpleosApp</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/vacantes/index}">Vacantes</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/categorias/index}">Categorias</a>
-      </li>
-       <li class="nav-item">
-              <a class="nav-link" href="/usuarios/index">Usuarios</a>
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/vacantes/indexPaginate">Vacantes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/categorias/indexPaginate">Categorias</a>
             </li>   
-      <li class="nav-item">
-        <a class="nav-link" href="#">Menu 2</a>
-      </li>          
-    </ul>  
-    <a class="btn btn-primary" href="#">Ingresar</a>&nbsp;
-    <a class="btn btn-primary" href="/signup">Registrarse</a>
-  </div>
-</nav>
+            <li class="nav-item">
+              <a class="nav-link" href="/usuarios/index">Usuarios</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/acerca">Acerca</a>
+            </li>          
+          </ul>  
+          <!-- (del inglés Non Breaking Space que significa espacio sin ruptura) sirve para representar 
+          en HTML un espacio en blanco y se utiliza normalmente en dos casos: 
+          Cuando queremos que dos palabras no se separen al ajustar el texto al tamaño de la ventana, 
+          por ejemplo las dos palabras que forman una marca. -->
+          
+          <!-- el &nbsp es para que haya una separacion entre los botones -->
+          <a class="btn btn-primary" href="#">Ingresar</a>&nbsp;
+          <a class="btn btn-primary" href="/signup">Registrarse</a>&nbsp;
+          <a class="btn btn-primary" href="/logout">Salir</a>&nbsp;
+        </div>
+      </nav>
