@@ -86,9 +86,15 @@ public class CategoriasServiceImpl implements ICategoriasService{
 	}
 
 	@Override
-	public Page<Vacante> buscarTodas(Pageable page) {
+	public Page<Categoria> buscarTodas(Pageable page) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void eliminar(Integer idCategoria) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

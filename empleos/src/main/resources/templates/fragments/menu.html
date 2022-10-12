@@ -6,13 +6,13 @@
 
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
+            <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERVISOR','ADMINISTRADOR')">
               <a class="nav-link" href="/vacantes/indexPaginate">Vacantes</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" sec:authorize="hasAnyAuthority('SUPERVISOR','ADMINISTRADOR')">
               <a class="nav-link" href="/categorias/indexPaginate">Categorias</a>
             </li>   
-            <li class="nav-item">
+            <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR')">
               <a class="nav-link" href="/usuarios/index">Usuarios</a>
             </li>
             <li class="nav-item">
@@ -25,8 +25,8 @@
           por ejemplo las dos palabras que forman una marca. -->
           
           <!-- el &nbsp es para que haya una separacion entre los botones -->
-          <a class="btn btn-primary" href="#">Ingresar</a>&nbsp;
-          <a class="btn btn-primary" href="/signup">Registrarse</a>&nbsp;
-          <a class="btn btn-primary" href="/logout">Salir</a>&nbsp;
+          <a class="btn btn-primary" th:href="@{/index}">Ingresar</a>&nbsp;
+          <a class="btn btn-primary" th:href="@{/signup}">Registrarse</a>&nbsp;
+          <a class="btn btn-primary" th:href="@{/logout}">Salir</a>&nbsp;
         </div>
       </nav>
