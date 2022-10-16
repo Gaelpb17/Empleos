@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +13,17 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import net.itinajero.model.Perfil;
@@ -40,7 +44,9 @@ public class HomeController {
 
 		@Autowired
 	    private IUsuariosService serviceUsuarios;
-
+		@Autowired
+		private PasswordEncoder passwordEncoder;
+		
 		@GetMapping("/signup")
 		public String registrarse(Usuario usuario,Model model) {
 			return "usuarios/formRegistro";
@@ -48,13 +54,18 @@ public class HomeController {
 
 		@PostMapping("/signup")
 		public String guardarRegistro(Usuario usuario, RedirectAttributes attributes) {
-			attributes = attributes;
+			String pwdPlano = usuario.getPassword();
+			String pwdEncriptado = passwordEncoder.encode(pwdPlano);
+			usuario.setPassword(pwdEncriptado);
+			
+			
 			usuario.setEstatus(1);
 			usuario.setFechaRegistro(new Date());
 
 			// creamos el perfil que le asignaremos al usuario nuevo
 			Perfil perfil = new Perfil();
 			perfil.setId(3);
+			usuario.agregar(perfil);
 			
 			// GUARDAMOS el USUARIO en la base de datos
 			// el perfil se guarda automaticamente
@@ -155,5 +166,24 @@ public class HomeController {
 
 
 	
+	}
+	@GetMapping("/bcrypt/{texto}")
+	@ResponseBody // sirve para que se renderize el texto y no una vista con el nombre
+	public String encriptar(@PathVariable("texto") String texto) {
+		return texto + " Encriptado en bcrypt: "+ passwordEncoder.encode(texto);
+	}
+	@GetMapping("/login" )
+	public String mostrarLogin() {
+	return "formLogin";
+	}
+	@GetMapping("/logout")
+	public String logout(HttpServletRequest request){
+
+	SecurityContextLogoutHandler logoutHandler =
+	new SecurityContextLogoutHandler();
+
+	logoutHandler.logout(request, null, null);
+
+	return "redirect:/login";
 	}
 }
